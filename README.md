@@ -1,1 +1,1 @@
-# money_matches
+This program allows you to keep track of money for multiple players playing money matches. Simply mark the winners and loses and the amount of money that the money match is for, and then click "Update Money". 
