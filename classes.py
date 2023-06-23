@@ -8,7 +8,7 @@ class Game:
         for player in cls.history[-1][:-1]:
             if player.status == "w":
                 player.history.append(cls.money_on_table)
-            else:
+            elif player.status == "l":
                 player.history.append(-cls.money_on_table)
         
     @classmethod
@@ -17,13 +17,13 @@ class Game:
             player.status = None
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, money=0, wins=0, losses=0, history=None):
         self.name = name
-        self.money = 0
+        self.money = money
         self.status = None
-        self.wins = 0
-        self.losses = 0
-        self.history = []
+        self.wins = wins
+        self.losses = losses
+        self.history = history if history is not None else []
     
     def display_history(self):
         history_string = ""
@@ -58,3 +58,12 @@ class Player:
     
     def __str__(self):
         return f"{self.name}: ${self.money}\n{self.wins}-{self.losses}"
+
+def save_data():
+    with open("save_file.py", "w") as output:
+        print("from classes import Game, Player", file=output)
+        for player in Game.players:
+            print(f"Game.players.append(Player('{player.name}', {player.money}, " 
+                  f"{player.wins}, {player.losses}, {player.history}))", file=output)
+        
+

@@ -1,12 +1,16 @@
+#todo:
+#Add function to save history
+
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.app import App
-from classes import Game, Player
+from classes import *
 from kivy.uix.togglebutton import ToggleButton
-
+import csv
+import save_file
 
 class MoneyMatch(App):
     def build(self):
@@ -15,6 +19,41 @@ class MoneyMatch(App):
         self.window.size_hint = (0.6, 0.6)
         self.window.pos_hint = {"center_x": 0.5, "center_y": 0.5}
 
+        buttons = GridLayout()
+        buttons.cols = 2
+        
+        if not len(Game.players):
+            return self.add_names()
+        
+        self.window.add_widget(Label(text="Automatically saved data was found from your"
+                                    " last time running the program.\nWould you like to"
+                                    " load this data?",
+                                    font_size=20))
+        
+        self.window.add_widget(buttons)
+        buttons.add_widget(Button(text="Yes",
+                                  background_color="#00FFCE",
+                                  font_size=20,
+                                  on_release=lambda x: self.play()
+                                  ))
+        
+        buttons.add_widget(Button(text="No (Delete saved file)",
+                                  background_color="#00FFCE",
+                                  font_size=20,
+                                  on_release=self.clear_file
+                                  ))
+        
+        return self.window
+    
+    def clear_file(self, instance):
+        print("test")
+        with open("save_file.py", "w") as output:
+            print("", file=output)
+        Game.players.clear()
+        return self.add_names()
+        
+    def add_names(self):
+        self.window.clear_widgets()
         self.window.add_widget(Image(source="money.webp"))
 
         self.window.add_widget(Label(
@@ -70,6 +109,7 @@ class MoneyMatch(App):
         self.error.text="Each name must be unique and between 2 and 11 characters long"    
 
     def play(self):
+        save_data()
         #Display Player Money
         
         self.window.clear_widgets()
@@ -215,6 +255,7 @@ class MoneyMatch(App):
         
         Game.update_histories()
         Game.reset_statuses()
+        save_data()
         return self.play()
     
     def show_error(self):
@@ -229,6 +270,7 @@ class MoneyMatch(App):
             elif player.history[-1] < 0:
                 player.losses -= 1
             player.money -= player.history.pop()
+        save_data()
         return self.play()
 
 if __name__ == "__main__":
