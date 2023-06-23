@@ -9,7 +9,6 @@ from kivy.uix.textinput import TextInput
 from kivy.app import App
 from classes import *
 from kivy.uix.togglebutton import ToggleButton
-import csv
 import save_file
 
 class MoneyMatch(App):
@@ -93,14 +92,14 @@ class MoneyMatch(App):
     
     def check_names(self, instance):
         if "," in self.input.text:
-            names = [name.strip() for name in self.input.text.split(",")]
+            names = [name.strip().capitalize() for name in self.input.text.split(",")]
         else:
             self.name_error()
             return
         for name in names:
             if names.count(name) > 1 or not 2 <= len(name) <= 11:
-                self.name_error()
-                return
+                return self.name_error()
+        
         for name in names:
             Game.players.append(Player(name.title()))
         self.play()
@@ -230,25 +229,28 @@ class MoneyMatch(App):
             player.status = "l"
         
     def update_money(self, instance):
-        winners = [player for player in Game.players if player.status == "w"]
-        losers = [player for player in Game.players if player.status == "l"]
+        winners = [player.name for player in Game.players if player.status == "w"]
+        losers = [player.name for player in Game.players if player.status == "l"]
 
         if len(winners) == 0:
             return self.show_error()
 
         if len(losers) == 0 and len(winners) == len(Game.players) / 2:
-            losers = [player for player in Game.players if player not in winners]
-            for player in losers:
+            losers = [player.name for player in Game.players if player.name not in winners]
+            for name in losers:
+                player = search_by_name(name)
                 player.status = "l"
 
         if len(winners) != len(losers):
             return self.show_error()
         
         #If teams are even:
-        for player in winners:
+        for name in winners:
+            player = search_by_name(name)
             player.money += Game.money_on_table
             player.wins += 1
-        for player in losers:
+        for name in losers:
+            player = search_by_name(name)
             player.money -= Game.money_on_table
             player.losses += 1
         Game.history.append(tuple(winners + losers + [Game.money_on_table]))
@@ -264,7 +266,8 @@ class MoneyMatch(App):
     def undo(self, instance):
         if len(Game.history) == 0:
             return
-        for player in Game.history.pop()[:-1]:
+        for name in Game.history.pop()[:-1]:
+            player = search_by_name(name)
             if player.history[-1] > 0:
                 player.wins -= 1
             elif player.history[-1] < 0:
