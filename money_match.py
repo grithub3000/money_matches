@@ -21,7 +21,7 @@ class MoneyMatch(App):
         buttons = GridLayout()
         buttons.cols = 2
         
-        if not len(Game.players):
+        if not Game.players:
             return self.add_names()
         
         self.window.add_widget(Label(text="Automatically saved data was found from your"
@@ -91,17 +91,26 @@ class MoneyMatch(App):
         return self.window
     
     def check_names(self, instance):
+        names = [player.name for player in Game.players]
         if "," in self.input.text:
-            names = [name.strip().capitalize() for name in self.input.text.split(",")]
+            names += [name.strip().title() for name in self.input.text.split(",")]
+        elif len(Game.players) == 0:
+            print("1st")
+            return self.name_error()
+        
+        #If Game.players already has players, and you are just adding 1 more player
         else:
-            self.name_error()
-            return
+            names.append(self.input.text.title().strip())
+
         for name in names:
             if names.count(name) > 1 or not 2 <= len(name) <= 11:
+                print("2nd")
+                print(name)
                 return self.name_error()
         
         for name in names:
-            Game.players.append(Player(name.title()))
+            if name not in [player.name for player in Game.players]:
+                Game.players.append(Player(name))
         self.play()
 
     def name_error(self):
@@ -185,6 +194,12 @@ class MoneyMatch(App):
         self.window.add_widget(Button(
                                       text="Undo",
                                       on_release=self.undo,
+                                      background_color="#00FFCE"
+                                      ))
+        
+        self.window.add_widget(Button(
+                                      text="Add Players",
+                                      on_release=lambda x: self.add_names(),
                                       background_color="#00FFCE"
                                       ))
         
