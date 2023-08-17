@@ -1,6 +1,3 @@
-#todo:
-#Add function to save history
-
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
