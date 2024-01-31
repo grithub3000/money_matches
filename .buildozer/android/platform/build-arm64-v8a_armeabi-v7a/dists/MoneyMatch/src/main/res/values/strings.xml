@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Money Match</string>
+    <string name="private_version">9ec0f8da838d8d5ba9cfe66d19d4914acbbb8f8e</string>
+    <string name="presplash_color">#000000</string>
+    <string name="urlScheme">kivy</string>
+</resources>
